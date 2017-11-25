@@ -1,0 +1,53 @@
+{
+  "name": "Magane-server",
+  "version": "1.0.0",
+  "description": "Magane Server",
+  "main": "server.js",
+  "scripts": {
+    "test": "eslint .",
+    "dev": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pitu/Magane-server.git"
+  },
+  "author": "Pitu",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=7.0.0"
+  },
+  "dependencies": {
+    "apng-js": "^1.0.3",
+    "axios": "^0.16.2",
+    "bluebird": "^3.4.7",
+    "body-parser": "^1.16.1",
+    "common-tags": "^1.4.0",
+    "cors": "^2.8.1",
+    "express": "^4.14.1",
+    "express-handlebars": "^3.0.0",
+    "express-rate-limit": "^2.6.0",
+    "gm": "^1.23.0",
+    "helmet": "^3.4.0",
+    "lamu": "^0.1.0",
+    "level": "^2.0.1",
+    "morgan": "^1.8.1",
+    "request": "^2.83.0",
+    "unzip-stream": "^0.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.11.0",
+    "eslint-config-aqua": "^2.0.1",
+    "nodemon": "^1.11.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "aqua"
+    ],
+    "env": {
+      "node": true
+    },
+    "rules": {
+      "func-names": 0
+    }
+  }
+}
