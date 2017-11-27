@@ -566,3 +566,10 @@ div.tabContent > div.content {
 div.tabContent > div.content.active {
 	display: block;
 }
+
+a, a:focus {
+	outline: none;
+	outline-style:none;
+	box-shadow:none;
+	border-color:transparent;
+}
