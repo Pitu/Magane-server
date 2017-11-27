@@ -33,7 +33,7 @@
 				<h1>Magane</h1>
 				<h2>Bringing LINE's <u>stickers</u> to Discord in a <u>chaotic</u> way.</h2>
 				<p class="actionButtons">
-					<a href="#install" class="btn btn-primary btn-lg">Install</a>
+					<a href="#" class="btn btn-primary btn-lg btnModal">Install</a>
 					<a href="https://discord.gg/5g6vgwn" class="btn btn-primary btn-lg">Support</a>
 					<a href="https://github.com/pitu/Magane" target="_blank" class="btn btn-primary btn-lg">GitHub</a>
 				</p>
@@ -109,9 +109,90 @@
 				<p>Magane built with ♥ by <a href="https://github.com/Pitu" target="_blank">Kana</a> and <a href="https://github.com/iCrawl" target="_blank">iCrawl</a>.</p>
 			</div>
 		</footer>
+
+		<div id="downloadModal" class="modal">
+			<div class="modal-overlay btnModal"></div>
+			<div class="modal-container">
+				<div class="modal-header">
+					<button class="btn btn-clear float-right btnModal"></button>
+					<div class="modal-title h5">Install options</div>
+				</div>
+				<div class="modal-body">
+					<div class="content">
+						<ul class="tab">
+							<li class="tab-item">
+								<a href="#">Recommended</a>
+							</li>
+							<li class="tab-item">
+								<a href="#">MyDiscord</a>
+							</li>
+							<li class="tab-item">
+								<a href="#">BetterDiscord</a>
+							</li>
+						</ul>
+					</div>
+					<div class="tabContent">
+						<div class="content" style="margin-top: 2em;">
+							<p>The easiest way to install Magane on Windows is to download the latest version of <a href="https://github.com/anonymousthing/InjectMeDaddy" target="blank">InjectMeDaddy</a>. It's a tool that facilitates injecting mods into Discord without needing to install 3rd party tools like Python/Node.</p>
+							<p class="text-center"><a href="{{ injector }}" class="btn btn-primary btn-lg">Download InjectMeDaddy</a></p>
+							<p>Open the injector and make sure Magane is selected in the list. Then while having Discord open, click the <u>Inject</u> button and wait until Discord restarts on it's own, it can take up to 30s for it to finish.</p>
+						</div>
+						<div class="content" style="margin-top: 2em;" >
+							<p>If you are already using <a href="https://github.com/justinoboyle/mydiscord" target="_blank">MyDiscord</a> to inject code into your Discord client, you can add Magane by adding the following URL to the <u>plugins array</u></p>
+							<blockquote>
+								<p>https://magane.moe/api/dist/magane</p>
+							</blockquote>
+						</div>
+						<div class="content" style="margin-top: 2em;">
+							<p>If you use BetterDiscord for all your Discord modding needs, then you can add Magane to it by downloading the following file and placing it in your <u>plugins</u> directory.</p>
+							<p class="text-center"><a href="https://magane.moe/api/dist/betterdiscord" target="_blank" class="btn btn-primary btn-lg">Download magane.plugin.js</a></p>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<a href="#null" class="btn btn-link btnModal">Close</a>
+				</div>
+			</div>
+		</div>
+
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/plyr/2.0.16/plyr.js"></script>
 		<script>
-			window.onload = function() { plyr.setup() };
+			window.onload = function() {
+				plyr.setup();
+
+				var activeTab;
+				var closeButtons = document.querySelectorAll('.btnModal');
+				for (var button of closeButtons) {
+					button.addEventListener('click', function() {
+						document.querySelector('#downloadModal').classList.toggle('active');
+						setActiveTab(0);
+					});
+				}
+
+				var tabs = document.querySelectorAll('.tab > li');
+				var tabLinks = document.querySelectorAll('.tab > li > a');
+				var tabContent = document.querySelectorAll('.tabContent > .content');
+
+				for (var i = 0; i < tabs.length; i++) {
+					tabs[i].addEventListener('click', setActiveTab.bind(this, i), false);
+				}
+
+				function setActiveTab(number) {
+					if (activeTab === number) return;
+					activeTab = number;
+					for (var i = 0; i < tabs.length; i++) {
+						if (i === number) {
+							tabs[i].classList.add('active');
+							tabLinks[i].classList.add('active');
+							tabContent[i].classList.add('active');
+						} else {
+							tabs[i].classList.remove('active');
+							tabLinks[i].classList.remove('active');
+							tabContent[i].classList.remove('active');
+						}
+					}
+				}
+			};
 		</script>
 	</body>
 </html>

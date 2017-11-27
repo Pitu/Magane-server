@@ -552,3 +552,17 @@ p.shadow img {
 	height: 200px;
 	margin-top: 20px;
 }
+div#downloadModal u {
+	border-bottom: .1rem solid currentColor;
+	padding-bottom: .05rem;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+div.tabContent > div.content {
+	display: none;
+}
+
+div.tabContent > div.content.active {
+	display: block;
+}
