@@ -30,7 +30,7 @@ class PackPOST extends Route {
 			});
 		}
 
-		if (animated) this.isAnimated = true;
+		// if (animated) this.isAnimated = true;
 
 		this.pack.id = id;
 		this.uploadPath = path.join(__dirname, '..', '..', '..', 'packs', id);
