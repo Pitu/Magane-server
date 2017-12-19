@@ -1,15 +1,16 @@
 const level = require('level');
 const logger = require('../util/Log');
 const path = require('path');
+const fs = require('fs');
 
 class Database {
 	constructor() {
 		if (!Database._instance) {
 			logger.info('Initializing database...');
 			this.db = level(path.join(__dirname, '..', '..', 'database'));
+			this.packsFolder = path.join(__dirname, '..', '..', 'packs');
 			this.packs = [];
-			this.cache = [];
-			logger.success('Initialized successfully.');
+			logger.success('Database initialized successfully.');
 			Database._instance = this;
 			this.loadPacks();
 		}
@@ -21,32 +22,26 @@ class Database {
 		return Database._instance;
 	}
 
+	loadPacks() {
+		this.packs = [];
+		fs.readdirSync(this.packsFolder).forEach(folder => {
+			if (folder === '.gitkeep') return;
+
+			fs.access(`${this.packsFolder}/${folder}/tab_on.png`, fs.constants.R_OK, async err => {
+				if (err) return;
+
+				const pack = JSON.parse(await this.db.get(folder));
+				this.packs.push(pack);
+				logger.success(`Loaded pack ${pack.name} (ID: ${pack.id})`);
+			});
+		});
+	}
+
 	async savePack(pack) {
 		logger.info(`Saving pack ${pack.name} (ID: ${pack.id})`);
 		await this.db.put(pack.id, JSON.stringify(pack));
 		logger.success('Pack saved!');
-		this.saveReference(pack.id);
-		this.packs.push(pack);
-	}
-
-	async loadPacks() {
-		let packs;
-		try {
-			packs = await this.db.get('packs');
-			this.cache = JSON.parse(packs);
-			for (const packId of this.cache) {
-				const pack = JSON.parse(await this.db.get(packId));
-				this.packs.push(pack);
-				logger.success(`Loaded pack ${pack.name} (ID: ${pack.id})`);
-			}
-		} catch (err) {
-			logger.error(err);
-		}
-	}
-
-	async saveReference(id) {
-		this.cache.push(id);
-		await this.db.put('packs', JSON.stringify(this.cache));
+		this.loadPacks();
 	}
 }
 

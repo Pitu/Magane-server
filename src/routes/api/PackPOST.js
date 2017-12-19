@@ -36,8 +36,10 @@ class PackPOST extends Route {
 		this.pack.files = [];
 		this.uploadPath = path.join(__dirname, '..', '..', '..', 'packs', id);
 
-		if (fs.existsSync(this.uploadPath)) return res.status(403).json({ message: 'Pack already exists' });
-		fs.mkdirSync(this.uploadPath);
+		if (fs.existsSync(`${this.uploadPath}/tab_on.png`)) return res.status(403).json({ message: 'Pack already exists' });
+		if (!fs.existsSync(this.uploadPath)) {
+			fs.mkdirSync(this.uploadPath);
+		}
 
 		this._downloadPack();
 
