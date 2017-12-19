@@ -3,7 +3,7 @@ const Route = require('../../structures/Route');
 const path = require('path');
 const request = require('request');
 const fs = require('fs');
-const unzip = require('unzip-stream');
+const unzip = require('unzip2');
 const gm = require('gm');
 const LINELink = 'http://dl.stickershop.line.naver.jp/products/0/0/1/<packid>/android/stickers.zip';
 const APNGLink = 'https://stickershop.line-scdn.net/stickershop/v1/sticker/<stickerid>/IOS/sticker_animation@2x.png';
@@ -12,12 +12,6 @@ const APNGLink = 'https://stickershop.line-scdn.net/stickershop/v1/sticker/<stic
 class PackPOST extends Route {
 	constructor() {
 		super('/api/pack/line/:id/:animated', 'post');
-		this.uploadPath = null;
-		this.isAnimated = false;
-		this.pack = {
-			id: null,
-			files: []
-		};
 	}
 
 	async run(req, res) {
@@ -30,52 +24,51 @@ class PackPOST extends Route {
 			});
 		}
 
-		// if (animated) this.isAnimated = true;
+		const pack = {
+			id,
+			files: [],
+			uploadPath: ''
+		};
 
-		this.pack.id = id;
-		this.pack.files = [];
-		this.uploadPath = path.join(__dirname, '..', '..', '..', 'packs', id);
+		pack.uploadPath = path.join(__dirname, '..', '..', '..', 'packs', id);
 
-		if (fs.existsSync(`${this.uploadPath}/tab_on.png`)) return res.status(403).json({ message: 'Pack already exists' });
-		if (!fs.existsSync(this.uploadPath)) {
-			fs.mkdirSync(this.uploadPath);
+		if (fs.existsSync(`${pack.uploadPath}/tab_on.png`)) return res.status(403).json({ message: 'Pack already exists' });
+		if (!fs.existsSync(pack.uploadPath)) {
+			fs.mkdirSync(pack.uploadPath);
 		}
 
-		this._downloadPack();
+		this._downloadPack(pack);
 
 		return res.status(200).json({ code: 200 });
 	}
 
-	_downloadPack() {
-		const stream = fs.createWriteStream(path.join(this.uploadPath, `${this.pack.id}.zip`));
-		request.get(LINELink.replace('<packid>', this.pack.id))
+	_downloadPack(pack) {
+		const stream = fs.createWriteStream(path.join(pack.uploadPath, `${pack.id}.zip`));
+		request.get(LINELink.replace('<packid>', pack.id))
 			.on('error', err => { logger.error(err); })
 			.pipe(stream)
 			.on('finish', () => {
-				logger.success(`Finished downloading pack ${this.pack.id}.`);
+				logger.success(`Finished downloading pack ${pack.id}.`);
 				logger.info('Extracting files...');
-				fs.createReadStream(path.join(this.uploadPath, `${this.pack.id}.zip`))
-					.on('error', () => { logger.error('There was a problem parsing the zip file.'); })
-					.pipe(unzip.Extract({ path: this.uploadPath }))
+
+				fs.createReadStream(path.join(pack.uploadPath, `${pack.id}.zip`))
+					.on('error', err => { logger.error(err); })
+					.pipe(unzip.Extract({ path: pack.uploadPath }))
 					.on('close', () => {
 						logger.success('Files were extracted successfully.');
-						if (this.isAnimated) {
-							this._processFilesAnimated(this.uploadPath);
-						} else {
-							this._processFiles(this.uploadPath);
-						}
+						this._processFiles(pack);
 					});
 			});
 	}
 
-	async _processFiles() {
-		const files = await fs.readdirAsync(this.uploadPath);
+	async _processFiles(pack) {
+		const files = await fs.readdirAsync(pack.uploadPath);
 		logger.info('Resizing images for Discord...');
 		for (let file of files) {
 			const ext = path.extname(file).toLowerCase();
 			if (file.includes('_key') || file.includes('tab_on') || file.includes('tab_off')) continue;
 			if (ext !== '.png' && ext !== '.gif') continue;
-			const fullPath = path.join(this.uploadPath, file);
+			const fullPath = path.join(pack.uploadPath, file);
 
 			/* APNG detection
 
@@ -92,26 +85,26 @@ class PackPOST extends Route {
 				image.write(fullPath, err => {
 					if (err) logger.error('Error saving thumbnail: ', err);
 				});
-				this.pack.files.push(file);
+				pack.files.push(file);
 			} catch (error) {
 				logger.error('Error executing GM: ', error);
 			}
 		}
 		logger.success('Finished resizing.');
-		this._saveToDatabase();
+		this._saveToDatabase(pack);
 	}
 
-	_saveToDatabase() {
-		if (fs.existsSync(path.join(this.uploadPath, 'productInfo.meta'))) {
+	_saveToDatabase(pack) {
+		if (fs.existsSync(path.join(pack.uploadPath, 'productInfo.meta'))) {
 			try {
-				const packInfo = JSON.parse(fs.readFileSync(path.join(this.uploadPath, 'productInfo.meta')));
-				this.pack.name = packInfo.title.en;
+				const packInfo = JSON.parse(fs.readFileSync(path.join(pack.uploadPath, 'productInfo.meta')));
+				pack.name = packInfo.title.en;
 			} catch (err) {
 				logger.error('Pack doesn\'t seem to have a productInfo.meta file');
 			}
 		}
-		this.pack.count = this.pack.files.length;
-		require('../../structures/Database').instance.savePack(this.pack);
+		pack.count = pack.files.length;
+		require('../../structures/Database').instance.savePack(pack);
 	}
 }
 
