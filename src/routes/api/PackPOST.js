@@ -33,6 +33,7 @@ class PackPOST extends Route {
 		// if (animated) this.isAnimated = true;
 
 		this.pack.id = id;
+		this.pack.files = [];
 		this.uploadPath = path.join(__dirname, '..', '..', '..', 'packs', id);
 
 		if (fs.existsSync(this.uploadPath)) return res.status(403).json({ message: 'Pack already exists' });
@@ -98,7 +99,7 @@ class PackPOST extends Route {
 		this._saveToDatabase();
 	}
 
-	async _saveToDatabase() {
+	_saveToDatabase() {
 		if (fs.existsSync(path.join(this.uploadPath, 'productInfo.meta'))) {
 			try {
 				const packInfo = JSON.parse(fs.readFileSync(path.join(this.uploadPath, 'productInfo.meta')));

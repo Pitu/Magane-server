@@ -26,6 +26,7 @@ class Database {
 		await this.db.put(pack.id, JSON.stringify(pack));
 		logger.success('Pack saved!');
 		this.saveReference(pack.id);
+		this.packs.push(pack);
 	}
 
 	async loadPacks() {
