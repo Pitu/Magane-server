@@ -25,7 +25,7 @@ class Util {
 		const filename = path.parse(file);
 
 		const animatedPng = path.join(pack.uploadPath, '_temp', `${filename.name}.png`);
-		const tempGif = path.join(pack.uploadPath, '_temp', '_temp', `${filename.name}.gif`);
+		const tempGif = path.join(pack.uploadPath, '_temp', `${filename.name}.gif`);
 		const finalGif = path.join(pack.uploadPath, `${filename.name}.gif`);
 		const finalGifKey = path.join(pack.uploadPath, `${filename.name}_key.gif`);
 
