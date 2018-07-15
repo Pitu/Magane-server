@@ -29,7 +29,7 @@ class PackPOST extends Route {
 			uploadPath: path.join(__dirname, '..', '..', '..', 'packs', id)
 		};
 
-		const exists = await db.table('packs').where({ id }).first();
+		const exists = await db.table('packs').where({ lineId: id }).first();
 		if (exists) return res.status(403).json({ message: 'Pack already exists' });
 
 		// Create folder
@@ -59,6 +59,7 @@ class PackPOST extends Route {
 			try {
 				const response = await axios.get(url, { responseType: 'arraybuffer' }); // eslint-disable-line no-await-in-loop
 				await jetpack.write(path.join(pack.uploadPath, '_temp', `${sticker.id}.png`), response.data); // eslint-disable-line no-await-in-loop
+				await jetpack.dir(path.join(pack.uploadPath, '_temp', '_temp')); // eslint-disable-line no-await-in-loop
 			} catch (error) {
 				console.error(error);
 			}
@@ -70,17 +71,15 @@ class PackPOST extends Route {
 		let firstFile = null;
 		jetpack.find(path.join(pack.uploadPath, '_temp'), { matching: '*.png' }).forEach(async file => {
 			if (!firstFile) firstFile = file;
-			if (!pack.animated) await utils.generateThumbnail(pack, file);
-			else utils.generateAnimatedThumbnail(pack, file);
+			try {
+				if (!pack.animated) await utils.generateThumbnail(pack, file);
+				else utils.generateAnimatedThumbnail(pack, file);
+			} catch (error) {
+				console.error(error);
+			}
 		});
 
 		await utils.generateTabThumbnail(pack, firstFile);
-
-		try {
-			await jetpack.removeAsync(path.join(pack.uploadPath, '_temp'));
-		} catch (error) {
-			console.error(error);
-		}
 		this._saveToDatabase(pack);
 	}
 
@@ -101,6 +100,14 @@ class PackPOST extends Route {
 		}
 
 		logger.success(`< Successfully added pack ${pack.name} (ID: ${pack.id}) >`);
+
+		setTimeout(async () => {
+			try {
+				await jetpack.removeAsync(path.join(pack.uploadPath, '_temp'));
+			} catch (error) {
+				console.error(error);
+			}
+		}, 30000);
 	}
 }
 

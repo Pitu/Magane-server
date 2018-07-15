@@ -2,6 +2,7 @@ const jetpack = require('fs-jetpack');
 const sharp = require('sharp');
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
+const { exec, spawn } = require('child_process');
 
 class Util {
 	static async generateThumbnail(pack, file) {
@@ -21,20 +22,25 @@ class Util {
 	}
 
 	static generateAnimatedThumbnail(pack, file) {
-		try {
-			const filename = path.parse(file);
-			ffmpeg(file)
-				.size('?x180')
-				.format('gif')
-				.saveToFile(path.join(pack.uploadPath, `${filename.name}.gif`));
+		const filename = path.parse(file);
 
-			ffmpeg(file)
-				.size('?x100')
-				.format('gif')
-				.saveToFile(path.join(pack.uploadPath, `${filename.name}_key.gif`));
-		} catch (error) {
-			console.log(error);
-		}
+		exec(`apng2gif ${path.join(pack.uploadPath, '_temp', `${filename.name}.png`)} ${path.join(pack.uploadPath, '_temp', '_temp', `${filename.name}.gif`)}`, (err, stdout, stderr) => {
+			if (err) {
+				console.error(`exec error: ${err}`);
+			}
+
+			exec(`gifsicle ${path.join(pack.uploadPath, '_temp', '_temp', `${filename.name}.gif`)} --resize _x180 > ${path.join(pack.uploadPath, `${filename.name}.gif`)}`, (error, stdout, stderr) => {
+				if (error) {
+					console.error(`exec error: ${error}`);
+				}
+			});
+
+			exec(`gifsicle ${path.join(pack.uploadPath, '_temp', '_temp', `${filename.name}.gif`)} --resize _x100 > ${path.join(pack.uploadPath, `${filename.name}_key.gif`)}`, (error, stdout, stderr) => {
+				if (error) {
+					console.error(`exec error: ${error}`);
+				}
+			});
+		});
 	}
 
 	static async generateTabThumbnail(pack, file) {
