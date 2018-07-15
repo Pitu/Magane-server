@@ -24,18 +24,23 @@ class Util {
 	static generateAnimatedThumbnail(pack, file) {
 		const filename = path.parse(file);
 
-		exec(`apng2gif ${path.join(pack.uploadPath, '_temp', `${filename.name}.png`)} ${path.join(pack.uploadPath, '_temp', '_temp', `${filename.name}.gif`)}`, (err, stdout, stderr) => {
+		const animatedPng = path.join(pack.uploadPath, '_temp', `${filename.name}.png`);
+		const tempGif = path.join(pack.uploadPath, '_temp', '_temp', `${filename.name}.gif`);
+		const finalGif = path.join(pack.uploadPath, `${filename.name}.gif`);
+		const finalGifKey = path.join(pack.uploadPath, `${filename.name}_key.gif`);
+
+		exec(`apng2gif ${animatedPng} ${tempGif}`, (err, stdout, stderr) => {
 			if (err) {
 				console.error(`exec error: ${err}`);
 			}
 
-			exec(`gifsicle ${path.join(pack.uploadPath, '_temp', '_temp', `${filename.name}.gif`)} --resize _x180 > ${path.join(pack.uploadPath, `${filename.name}.gif`)}`, (error, stdout, stderr) => {
+			exec(`gifsicle ${tempGif} --resize _x180 > ${finalGif}`, (error, stdout, stderr) => {
 				if (error) {
 					console.error(`exec error: ${error}`);
 				}
 			});
 
-			exec(`gifsicle ${path.join(pack.uploadPath, '_temp', '_temp', `${filename.name}.gif`)} --resize _x100 > ${path.join(pack.uploadPath, `${filename.name}_key.gif`)}`, (error, stdout, stderr) => {
+			exec(`gifsicle ${tempGif} --resize _x100 > ${finalGifKey}`, (error, stdout, stderr) => {
 				if (error) {
 					console.error(`exec error: ${error}`);
 				}
