@@ -1,18 +1,25 @@
 const Route = require('../../structures/Route');
 const { server } = require('../../config');
-const logger = require('../../util/Log');
+const db = require('knex')(server.database);
 
 class PackGET extends Route {
 	constructor() {
 		super('/api/packs', 'get');
 	}
 
-	async authorize(req, res) {
+	authorize(req, res) {
 		return this.run(req, res);
 	}
 
 	async run(req, res) {
-		const { packs } = require('../../structures/Database').instance;
+		const packs = await db.table('packs').select('name', 'count', 'lineId as id', 'animated');
+		for (const pack of packs) {
+			pack.files = [];
+			const stickers = await db.table('stickers').where({ packId: pack.id }).select('file'); // eslint-disable-line no-await-in-loop
+			for (const sticker of stickers) {
+				pack.files.push(sticker.file);
+			}
+		}
 		return res.status(200).json({
 			baseURL: server.baseURL,
 			packs

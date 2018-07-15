@@ -11,10 +11,17 @@ class BaseRouteGET extends Route {
 	}
 
 	async run(req, res) {
-		const response = await axios.get('https://api.github.com/repos/anonymousthing/InjectMeDaddy/releases/latest');
+		let injector = 'https://github.com/anonymousthing/InjectMeDaddy/releases/latest';
+		try {
+			const response = await axios.get('https://api.github.com/repos/anonymousthing/InjectMeDaddy/releases/latest');
+			injector = response.data.assets[0].browser_download_url;
+		} catch (error) {
+			console.error(error);
+		}
+
 		return res.render('home', {
 			layout: false,
-			injector: response.data.assets[0].browser_download_url
+			injector
 		});
 	}
 }

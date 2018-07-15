@@ -1,6 +1,6 @@
 {
   "name": "Magane-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Magane Server",
   "main": "server.js",
   "scripts": {
@@ -17,8 +17,7 @@
     "node": ">=7.0.0"
   },
   "dependencies": {
-    "apng-js": "^1.0.3",
-    "axios": "^0.16.2",
+    "axios": "^0.18.0",
     "bluebird": "^3.4.7",
     "body-parser": "^1.16.1",
     "common-tags": "^1.4.0",
@@ -26,17 +25,19 @@
     "express": "^4.14.1",
     "express-handlebars": "^3.0.0",
     "express-rate-limit": "^2.6.0",
-    "gm": "^1.23.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "fs-jetpack": "^2.0.0",
     "helmet": "^3.4.0",
+    "knex": "^0.15.1",
     "lamu": "^0.1.0",
-    "level": "^2.0.1",
     "morgan": "^1.8.1",
-    "request": "^2.83.0",
+    "sharp": "^0.20.5",
+    "sqlite3": "^4.0.1",
     "unzip2": "^0.2.5"
   },
   "devDependencies": {
-    "eslint": "^4.11.0",
-    "eslint-config-aqua": "^2.0.1",
+    "eslint": "^4.19.1",
+    "eslint-config-aqua": "3.0.0",
     "nodemon": "^1.11.0"
   },
   "eslintConfig": {
@@ -47,7 +48,11 @@
       "node": true
     },
     "rules": {
-      "func-names": 0
+      "func-names": 0,
+      "capitalized-comments": 0,
+      "max-len": 0,
+      "id-length": 0,
+      "no-warning-comments": 0
     }
   }
 }

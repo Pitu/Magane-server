@@ -1,47 +1,42 @@
-const level = require('level');
-const logger = require('../util/Log');
-const path = require('path');
-const fs = require('fs');
+const logger = require('../utils/Log');
+const { server } = require('../config');
+const db = require('knex')(server.database);
 
 class Database {
 	constructor() {
-		if (!Database._instance) {
-			logger.info('Initializing database...');
-			this.db = level(path.join(__dirname, '..', '..', 'database'));
-			this.packsFolder = path.join(__dirname, '..', '..', 'packs');
-			this.packs = [];
-			logger.success('Database initialized successfully.');
-			Database._instance = this;
-			this.loadPacks();
-		}
-		return Database._instance;
+		this.createTables();
+		this.printPacks();
 	}
 
-	static get instance() {
-		if (!Database._instance) new Database();
-		return Database._instance;
-	}
-
-	loadPacks() {
-		this.packs = [];
-		fs.readdirSync(this.packsFolder).forEach(folder => {
-			if (folder === '.gitkeep') return;
-
-			fs.access(`${this.packsFolder}/${folder}/tab_on.png`, fs.constants.R_OK, async err => {
-				if (err) return;
-
-				const pack = JSON.parse(await this.db.get(folder));
-				this.packs.push(pack);
-				logger.success(`Loaded pack ${pack.name} (ID: ${pack.id})`);
+	async createTables() {
+		if (!await db.schema.hasTable('packs')) {
+			await db.schema.createTable('packs', table => {
+				table.increments();
+				table.string('lineId');
+				table.string('name');
+				table.boolean('animated');
+				table.integer('count');
+				table.integer('subscribed').defaultTo(0);
+				table.boolean('enabled').defaultTo(true);
 			});
-		});
+		}
+
+		if (!await db.schema.hasTable('stickers')) {
+			await db.schema.createTable('stickers', table => {
+				table.increments();
+				table.string('packId');
+				table.string('lineId');
+				table.string('file');
+			});
+		}
 	}
 
-	async savePack(pack) {
-		logger.info(`Saving pack ${pack.name} (ID: ${pack.id})`);
-		await this.db.put(pack.id, JSON.stringify(pack));
-		logger.success('Pack saved!');
-		this.loadPacks();
+	async printPacks() {
+		if (!await db.schema.hasTable('packs')) return;
+		const packs = await db.table('packs');
+		for (const pack of packs) {
+			logger.success(`< Loaded pack ${pack.name} (ID: ${pack.lineId}) >`);
+		}
 	}
 }
 

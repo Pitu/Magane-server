@@ -11,7 +11,7 @@ const path = require('path');
 const Database = require('./Database');
 const exphbs = require('express-handlebars');
 
-const logger = require('../util/Log');
+const logger = require('../utils/Log');
 const { server } = require('../config');
 
 const rateLimiter = new RateLimit({

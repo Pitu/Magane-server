@@ -1,5 +1,4 @@
 const Route = require('../../structures/Route');
-const { oneLine } = require('common-tags');
 
 class PackGET extends Route {
 	constructor() {

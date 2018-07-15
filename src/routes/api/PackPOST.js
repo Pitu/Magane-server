@@ -1,21 +1,21 @@
-const logger = require('../../util/Log');
+const logger = require('../../utils/Log');
+const utils = require('../../utils/Util');
 const Route = require('../../structures/Route');
 const path = require('path');
-const request = require('request');
-const fs = require('fs');
-const unzip = require('unzip2');
-const gm = require('gm');
-const LINELink = 'http://dl.stickershop.line.naver.jp/products/0/0/1/<packid>/android/stickers.zip';
-const APNGLink = 'https://stickershop.line-scdn.net/stickershop/v1/sticker/<stickerid>/IOS/sticker_animation@2x.png';
-// . const parseAPNG = require('apng-js');
+const axios = require('axios');
+const jetpack = require('fs-jetpack');
+const { server } = require('../../config');
+const db = require('knex')(server.database);
+// const LINELink = 'http://dl.stickershop.line.naver.jp/products/0/0/1/<packid>/android/stickers.zip';
+// const APNGLink = 'https://stickershop.line-scdn.net/stickershop/v1/sticker/<stickerid>/IOS/sticker_animation@2x.png';
 
 class PackPOST extends Route {
 	constructor() {
-		super('/api/pack/line/:id/:animated', 'post');
+		super('/api/pack/line/:id', 'post');
 	}
 
 	async run(req, res) {
-		const { id, animated } = req.params;
+		const { id } = req.params;
 
 		if (!id) {
 			return res.status(400).json({
@@ -26,85 +26,79 @@ class PackPOST extends Route {
 
 		const pack = {
 			id,
-			files: [],
-			uploadPath: ''
+			uploadPath: path.join(__dirname, '..', '..', '..', 'packs', id)
 		};
 
-		pack.uploadPath = path.join(__dirname, '..', '..', '..', 'packs', id);
+		const exists = await db.table('packs').where({ id }).first();
+		if (exists) return res.status(403).json({ message: 'Pack already exists' });
 
-		if (fs.existsSync(`${pack.uploadPath}/tab_on.png`)) return res.status(403).json({ message: 'Pack already exists' });
-		if (!fs.existsSync(pack.uploadPath)) {
-			fs.mkdirSync(pack.uploadPath);
-		}
+		// Create folder
+		await jetpack.dir(pack.uploadPath);
+		this._getMetadata(pack);
 
-		this._downloadPack(pack);
-
-		return res.status(200).json({ code: 200 });
+		return res.status(200).json({ message: 'Pack added.' });
 	}
 
-	_downloadPack(pack) {
-		const stream = fs.createWriteStream(path.join(pack.uploadPath, `${pack.id}.zip`));
-		request.get(LINELink.replace('<packid>', pack.id))
-			.on('error', err => { logger.error(err); })
-			.pipe(stream)
-			.on('finish', () => {
-				logger.success(`Finished downloading pack ${pack.id}.`);
-				logger.info('Extracting files...');
+	async _getMetadata(pack) {
+		try {
+			const response = await axios.get(`http://dl.stickershop.line.naver.jp/products/0/0/1/${pack.id}/android/productInfo.meta`);
+			pack.name = response.data.title.en || response.data.title.ja;
+			pack.stickers = response.data.stickers;
+			pack.animated = response.data.hasAnimation;
+			this._getFiles(pack);
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
-				fs.createReadStream(path.join(pack.uploadPath, `${pack.id}.zip`))
-					.on('error', err => { logger.error(err); })
-					.pipe(unzip.Extract({ path: pack.uploadPath }))
-					.on('close', () => {
-						logger.success('Files were extracted successfully.');
-						this._processFiles(pack);
-					});
-			});
+	async _getFiles(pack) {
+		for (const sticker of pack.stickers) {
+			let url = `http://dl.stickershop.line.naver.jp/stickershop/v1/sticker/${sticker.id}/android/sticker.png`;
+			if (pack.animated) url = `https://sdl-stickershop.line.naver.jp/products/0/0/1/${pack.id}/android/animation/${sticker.id}.png`;
+
+			try {
+				const response = await axios.get(url, { responseType: 'arraybuffer' }); // eslint-disable-line no-await-in-loop
+				await jetpack.write(path.join(pack.uploadPath, '_temp', `${sticker.id}.png`), response.data); // eslint-disable-line no-await-in-loop
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		this._processFiles(pack);
 	}
 
 	async _processFiles(pack) {
-		const files = await fs.readdirAsync(pack.uploadPath);
-		logger.info('Resizing images for Discord...');
-		for (let file of files) {
-			const ext = path.extname(file).toLowerCase();
-			if (file.includes('_key') || file.includes('tab_on') || file.includes('tab_off')) continue;
-			if (ext !== '.png' && ext !== '.gif') continue;
-			const fullPath = path.join(pack.uploadPath, file);
+		let firstFile = null;
+		jetpack.find(path.join(pack.uploadPath, '_temp'), { matching: '*.png' }).forEach(async file => {
+			if (!firstFile) firstFile = file;
+			if (!pack.animated) await utils.generateThumbnail(pack, file);
+			else utils.generateAnimatedThumbnail(pack, file);
+		});
 
-			/* APNG detection
+		await utils.generateTabThumbnail(pack, firstFile);
 
-			// Doesnt seem to be reliable tho, gotta look more into it.
-			const apng = parseAPNG.isNotAPNG(fullPath);
-			logger.error(apng);
-
-			*/
-
-			try {
-				const image = gm(fullPath);
-				image.resizeExact(null, 180);
-				image.background('transparent');
-				image.write(fullPath, err => {
-					if (err) logger.error('Error saving thumbnail: ', err);
-				});
-				pack.files.push(file);
-			} catch (error) {
-				logger.error('Error executing GM: ', error);
-			}
+		try {
+			await jetpack.removeAsync(path.join(pack.uploadPath, '_temp'));
+		} catch (error) {
+			console.error(error);
 		}
-		logger.success('Finished resizing.');
 		this._saveToDatabase(pack);
 	}
 
-	_saveToDatabase(pack) {
-		if (fs.existsSync(path.join(pack.uploadPath, 'productInfo.meta'))) {
-			try {
-				const packInfo = JSON.parse(fs.readFileSync(path.join(pack.uploadPath, 'productInfo.meta')));
-				pack.name = packInfo.title.en;
-			} catch (err) {
-				logger.error('Pack doesn\'t seem to have a productInfo.meta file');
-			}
+	async _saveToDatabase(pack) {
+		await db.table('packs').insert({
+			name: pack.name,
+			lineId: pack.id,
+			animated: pack.animated,
+			count: pack.stickers.length
+		});
+
+		for (const sticker of pack.stickers) {
+			await db.table('stickers').insert({ // eslint-disable-line no-await-in-loop
+				packId: pack.id,
+				lineId: sticker.id,
+				file: pack.animated ? `${sticker.id}.gif` : `${sticker.id}.png`
+			});
 		}
-		pack.count = pack.files.length;
-		require('../../structures/Database').instance.savePack(pack);
 	}
 }
 
