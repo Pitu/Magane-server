@@ -99,6 +99,8 @@ class PackPOST extends Route {
 				file: pack.animated ? `${sticker.id}.gif` : `${sticker.id}.png`
 			});
 		}
+
+		logger.success(`< Successfully added pack ${pack.name} (ID: ${pack.id}) >`);
 	}
 }
 
