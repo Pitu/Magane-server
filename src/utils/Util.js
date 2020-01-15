@@ -2,7 +2,7 @@ const jetpack = require('fs-jetpack');
 const sharp = require('sharp');
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
-const { exec, spawn } = require('child_process');
+const { exec } = require('child_process');
 
 class Util {
 	static async generateThumbnail(pack, file) {
@@ -29,23 +29,19 @@ class Util {
 		const finalGif = path.join(pack.uploadPath, `${filename.name}.gif`);
 		const finalGifKey = path.join(pack.uploadPath, `${filename.name}_key.gif`);
 
-		ffmpeg()
-			.input(animatedPng)
-			.output(tempGif)
-			.on('end', () => {
-				exec(`gifsicle ${tempGif} --resize _x180 > ${finalGif}`, (error, stdout, stderr) => {
-					if (error) {
-						console.error(`exec error: ${error}`);
-					}
-				});
+		exec(`apng2gif ${animatedPng} ${tempGif}`, (err, stdout, stderr) => {
+			if (err) {
+				console.error(`exec error: ${err}`);
+			}
 
-				exec(`gifsicle ${tempGif} --resize _x100 > ${finalGifKey}`, (error, stdout, stderr) => {
-					if (error) {
-						console.error(`exec error: ${error}`);
-					}
-				});
-			})
-			.run();
+			ffmpeg()
+				.input(tempGif)
+				.output(finalGif)
+				.size('?x180')
+				.output(finalGifKey)
+				.size('?x100')
+				.run();
+		});
 	}
 
 	static async generateTabThumbnail(pack, file) {

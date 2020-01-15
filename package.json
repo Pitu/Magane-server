@@ -31,8 +31,8 @@
     "knex": "^0.15.1",
     "lamu": "^0.1.0",
     "morgan": "^1.8.1",
-    "sharp": "^0.20.5",
-    "sqlite3": "^4.0.1",
+    "sharp": "^0.23.4",
+    "sqlite3": "^4.0.2",
     "unzip2": "^0.2.5"
   },
   "devDependencies": {
@@ -54,5 +54,8 @@
       "id-length": 0,
       "no-warning-comments": 0
     }
+  },
+  "resolutions": {
+    "nan": "2.14.0"
   }
 }
