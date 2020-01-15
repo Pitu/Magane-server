@@ -9,15 +9,11 @@ class Util {
 		try {
 			const filename = path.parse(file);
 			await sharp(file)
-				.resize(null, 180, {
-					kernel: 'nearest'
-				})
+				.resize(null, 180, { kernel: 'nearest' })
 				.toFormat('png')
 				.toFile(path.join(pack.uploadPath, filename.base));
 			await sharp(file)
-				.resize(null, 100, {
-					kernel: 'nearest'
-				})
+				.resize(null, 100, { kernel: 'nearest' })
 				.toFormat('png')
 				.toFile(path.join(pack.uploadPath, `${filename.name}_key.png`));
 		} catch (error) {
