@@ -29,23 +29,23 @@ class Util {
 		const finalGif = path.join(pack.uploadPath, `${filename.name}.gif`);
 		const finalGifKey = path.join(pack.uploadPath, `${filename.name}_key.gif`);
 
-		exec(`apng2gif ${animatedPng} ${tempGif}`, (err, stdout, stderr) => {
-			if (err) {
-				console.error(`exec error: ${err}`);
-			}
+		ffmpeg()
+			.input(animatedPng)
+			.output(tempGif)
+			.on('end', () => {
+				exec(`gifsicle ${tempGif} --resize _x180 > ${finalGif}`, (error, stdout, stderr) => {
+					if (error) {
+						console.error(`exec error: ${error}`);
+					}
+				});
 
-			exec(`gifsicle ${tempGif} --resize _x180 > ${finalGif}`, (error, stdout, stderr) => {
-				if (error) {
-					console.error(`exec error: ${error}`);
-				}
-			});
-
-			exec(`gifsicle ${tempGif} --resize _x100 > ${finalGifKey}`, (error, stdout, stderr) => {
-				if (error) {
-					console.error(`exec error: ${error}`);
-				}
-			});
-		});
+				exec(`gifsicle ${tempGif} --resize _x100 > ${finalGifKey}`, (error, stdout, stderr) => {
+					if (error) {
+						console.error(`exec error: ${error}`);
+					}
+				});
+			})
+			.run();
 	}
 
 	static async generateTabThumbnail(pack, file) {
