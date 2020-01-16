@@ -16,6 +16,7 @@ class PackPOST extends Route {
 
 	async run(req, res) {
 		const { id } = req.params;
+		const { overwrite } = req.headers;
 
 		if (!id) {
 			return res.status(400).json({
@@ -30,7 +31,11 @@ class PackPOST extends Route {
 		};
 
 		const exists = await db.table('packs').where({ lineId: id }).first();
-		if (exists) return res.status(403).json({ message: 'Pack already exists' });
+		if (exists) {
+			if (!overwrite) return res.status(403).json({ message: 'Pack already exists' });
+			await db.table('packs').where({ lineId: id }).del();
+			await jetpack.removeAsync(pack.uploadPath);
+		}
 
 		// Create folder
 		await jetpack.dir(pack.uploadPath);
