@@ -1,8 +1,8 @@
 const jetpack = require('fs-jetpack');
 const sharp = require('sharp');
-const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
-const { exec } = require('child_process');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 class Util {
 	static async generateThumbnail(pack, file) {
@@ -21,27 +21,24 @@ class Util {
 		}
 	}
 
-	static generateAnimatedThumbnail(pack, file) {
+	static async generateAnimatedThumbnail(pack, file) {
 		const filename = path.parse(file);
 
 		const animatedPng = path.join(pack.uploadPath, '_temp', `${filename.name}.png`);
-		const tempGif = path.join(pack.uploadPath, '_temp', `${filename.name}.gif`);
+		const tempPng = path.join(pack.uploadPath, `${filename.name}_180.png`);
+		const tempPngKey = path.join(pack.uploadPath, `${filename.name}_100.png`);
+
 		const finalGif = path.join(pack.uploadPath, `${filename.name}.gif`);
 		const finalGifKey = path.join(pack.uploadPath, `${filename.name}_key.gif`);
 
-		exec(`apng2gif ${animatedPng} ${tempGif}`, (err, stdout, stderr) => {
-			if (err) {
-				console.error(`exec error: ${err}`);
-			}
+		await exec(`ffmpeg -i ${animatedPng} -f apng -plays 0 -vf scale="-1:180" ${tempPng} -f apng -plays 0 -vf scale="-1:100" ${tempPngKey}`);
+		await exec(`apng2gif ${tempPng} ${finalGif}`);
+		await exec(`apng2gif ${tempPngKey} ${finalGifKey}`);
 
-			ffmpeg()
-				.input(tempGif)
-				.output(finalGif)
-				.size('?x180')
-				.output(finalGifKey)
-				.size('?x100')
-				.run();
-		});
+		await jetpack.renameAsync(path.join(pack.uploadPath, `${filename.name}_180.gif`), `${filename.name}.gif`);
+		await jetpack.renameAsync(path.join(pack.uploadPath, `${filename.name}_100.gif`), `${filename.name}_key.gif`);
+		await jetpack.removeAsync(tempPng);
+		await jetpack.removeAsync(tempPngKey);
 	}
 
 	static async generateTabThumbnail(pack, file) {
