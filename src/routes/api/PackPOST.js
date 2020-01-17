@@ -1,4 +1,3 @@
-const logger = require('../../utils/Log');
 const utils = require('../../utils/Util');
 const Route = require('../../structures/Route');
 const path = require('path');
@@ -104,7 +103,7 @@ class PackPOST extends Route {
 			});
 		}
 
-		logger.success(`< Successfully added pack ${pack.name} (ID: ${pack.id}) >`);
+		console.log(`< Successfully added pack ${pack.name} (ID: ${pack.id}) >`);
 
 		setTimeout(async () => {
 			try {

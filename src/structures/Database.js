@@ -1,4 +1,3 @@
-const logger = require('../utils/Log');
 const { server } = require('../config');
 const db = require('knex')(server.database);
 
@@ -35,7 +34,7 @@ class Database {
 		if (!await db.schema.hasTable('packs')) return;
 		const packs = await db.table('packs');
 		for (const pack of packs) {
-			logger.success(`< Loaded pack ${pack.name} (ID: ${pack.lineId}) >`);
+			console.log(`< Loaded pack ${pack.name} (ID: ${pack.lineId}) >`);
 		}
 	}
 }

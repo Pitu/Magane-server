@@ -11,7 +11,6 @@ const path = require('path');
 const Database = require('./Database');
 const exphbs = require('express-handlebars');
 
-const logger = require('../utils/Log');
 const { server } = require('../config');
 
 const rateLimiter = new RateLimit({
@@ -41,7 +40,7 @@ class Server {
 				const RouteClass = require(path.join(routePath, folder, file));
 				const route = new RouteClass();
 				this.server[route.method](prefix + route.path, route.authorize.bind(route));
-				logger.info(`Found route ${route.method.toUpperCase()} ${prefix}${route.path}`);
+				console.log(`Found route ${route.method.toUpperCase()} ${prefix}${route.path}`);
 			}
 		}
 	}
@@ -59,7 +58,7 @@ class Server {
 		this.server.use('/', express.static(path.join(__dirname, '..', 'views', 'assets')));
 		this._registerRoutesIn(server.routePrefix, path.join(__dirname, '..', 'routes'));
 		this.server.listen(this.port, () => {
-			logger.success(`Magane-server started on port ${this.port}.`);
+			console.log(`Magane-server started on port ${this.port}.`);
 		});
 	}
 }
