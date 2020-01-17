@@ -9,11 +9,11 @@ class Util {
 		try {
 			const filename = path.parse(file);
 			await sharp(file)
-				.resize(null, 180, { kernel: 'nearest' })
+				.resize(null, 180, { kernel: 'lanczos3' })
 				.toFormat('png')
 				.toFile(path.join(pack.uploadPath, filename.base));
 			await sharp(file)
-				.resize(null, 100, { kernel: 'nearest' })
+				.resize(null, 100, { kernel: 'lanczos3' })
 				.toFormat('png')
 				.toFile(path.join(pack.uploadPath, `${filename.name}_key.png`));
 		} catch (error) {
@@ -44,9 +44,7 @@ class Util {
 	static async generateTabThumbnail(pack, file) {
 		try {
 			await sharp(file)
-				.resize(null, 50, {
-					kernel: 'nearest'
-				})
+				.resize(null, 50, { kernel: 'lanczos3' })
 				.toFormat('png')
 				.toFile(path.join(pack.uploadPath, 'tab_on.png'));
 		} catch (error) {
