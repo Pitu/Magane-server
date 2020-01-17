@@ -33,6 +33,7 @@ class PackPOST extends Route {
 		if (exists) {
 			if (!overwrite) return res.status(403).json({ message: 'Pack already exists' });
 			await db.table('packs').where({ lineId: id }).del();
+			await db.table('stickers').where({ packId: id }).del();
 			await jetpack.removeAsync(pack.uploadPath);
 		}
 
