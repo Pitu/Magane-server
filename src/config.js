@@ -5,7 +5,7 @@ module.exports = {
 			window: 5,
 			max: 2
 		},
-		secret: 'ZZLgqgXXGXTfj#=fjdj-*nYg3V@PN6_w%&-8xPCF%7LVxc8Ay7Jm^e@Rs%U4#AQD',
+		secret: '',
 		routePrefix: '',
 		baseURL: 'https://magane.moe/packs/',
 		database: {
