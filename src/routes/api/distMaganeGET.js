@@ -13,7 +13,7 @@ class PackGET extends Route {
 	async run(req, res) {
 		const response = await axios({
 			method: 'get',
-			url: 'https://raw.githubusercontent.com/Pitu/Magane/master/dist/stickers.min.js',
+			url: 'https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.min.js',
 			responseType: 'text'
 		});
 
