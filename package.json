@@ -12,7 +12,7 @@
     "url": "git+https://github.com/Pitu/Magane-server.git"
   },
   "author": "Pitu",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "engines": {
     "node": ">=7.0.0"
   },
