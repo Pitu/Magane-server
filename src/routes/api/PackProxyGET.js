@@ -20,6 +20,9 @@ class PackProxyGET extends Route {
 		if (!search[1]) res.status(400);
 		const title = search[1].split('LINE')[0].slice(0, -3);
 		search = response.data.match(/sticker\/(.*?)\/android\/sticker.png/g);
+		if (!search || !search.length) {
+			search = response.data.match(/sticker\/(.*?)\/iPhone\/sticker@2x.png/g);
+		}
 
 		return res.status(200).json({
 			title,
