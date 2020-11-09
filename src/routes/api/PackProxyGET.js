@@ -14,20 +14,11 @@ class PackProxyGET extends Route {
 		if (!id) return res.status(400).json({ message: 'Invalid pack ID supplied' });
 
 		const axios = require('axios');
-		const response = await axios.get(`https://store.line.me/stickershop/product/${id}/en`);
-
-		let search = response.data.match(/<title>(.*?)<\/title>/);
-		if (!search[1]) res.status(400);
-		const title = search[1].split('LINE')[0].slice(0, -3);
-		search = response.data.match(/sticker\/(.*?)\/android\/sticker.png/g);
-		if (!search || !search.length) {
-			search = response.data.match(/sticker\/(.*?)\/iPhone\/sticker@2x.png/g);
-		}
-
+		const response = await axios.get(`http://dl.stickershop.line.naver.jp/products/0/0/1/${id}/android/productInfo.meta`);
 		return res.status(200).json({
-			title,
-			first: parseInt(search[0].match(/\d+/)[0]),
-			len: search.length / 4
+			title: response.data.title.en,
+			first: response.data.stickers[0].id,
+			len: response.data.stickers.length
 		});
 	}
 }
