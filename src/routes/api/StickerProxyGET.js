@@ -18,7 +18,9 @@ class StickerProxyGET extends Route {
 		return res.status(200).json({
 			title: response.data.title.en,
 			first: response.data.stickers[0].id,
-			len: response.data.stickers.length
+			len: response.data.stickers.length,
+			hasAnimation: response.data.hasAnimation,
+			hasSound: response.data.hasSound
 		});
 	}
 }
