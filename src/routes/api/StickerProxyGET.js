@@ -1,8 +1,8 @@
 const Route = require('../../structures/Route');
 
-class PackProxyGET extends Route {
+class StickerProxyGET extends Route {
 	constructor() {
-		super('/api/proxy/:id', 'get');
+		super('/api/proxy/sticker/:id', 'get');
 	}
 
 	authorize(req, res) {
@@ -23,4 +23,4 @@ class PackProxyGET extends Route {
 	}
 }
 
-module.exports = PackProxyGET;
+module.exports = StickerProxyGET;
