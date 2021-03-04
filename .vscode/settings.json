@@ -1,0 +1,17 @@
+{
+	"eslint.alwaysShowStatus": true,
+	"eslint.format.enable": true,
+	"editor.detectIndentation": false,
+	"editor.insertSpaces": false,
+	"editor.formatOnPaste": true,
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "dbaeumer.vscode-eslint",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"files.insertFinalNewline": true,
+	"files.eol": "\n",
+	"[javascript]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	}
+}

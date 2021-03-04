@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../database/database.sqlite"
+}
+
+model packs {
+  id         Int      @id @default(autoincrement())
+  lineId     String?
+  name       String?
+  animated   Boolean?
+  count      Int?
+  subscribed Int?     @default(0)
+  enabled    Boolean? @default(true)
+}
+
+model stickers {
+  id     Int     @id @default(autoincrement())
+  packId String?
+  lineId String?
+  file   String?
+}
