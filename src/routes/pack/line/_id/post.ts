@@ -9,7 +9,7 @@ import { exec } from 'child_process';
 const ex = util.promisify(exec);
 
 interface Pack {
-	id: string;
+	id: number;
 	uploadPath: string;
 	name?: string;
 	stickers?: Sticker[];
@@ -17,9 +17,9 @@ interface Pack {
 }
 
 interface Sticker {
-	id: string;
-	packId: string;
-	lineId: string;
+	id: number;
+	packId: number;
+	lineId: number;
 }
 export const run = async (req: Request, res: Response): Promise<any> => {
 	const { id } = req.params;
@@ -33,15 +33,15 @@ export const run = async (req: Request, res: Response): Promise<any> => {
 	}
 
 	const pack: Pack = {
-		id,
+		id: parseInt(id, 10),
 		uploadPath: path.join(__dirname, '..', '..', '..', '..', '..', 'packs', id)
 	};
 
-	const exists = await prisma.packs.findFirst({ where: { lineId: id } });
+	const exists = await prisma.packs.findFirst({ where: { lineId: pack.id } });
 	if (exists) {
 		if (!overwrite) return res.status(403).json({ message: 'Pack already exists' });
-		await prisma.packs.deleteMany({ where: { lineId: id } });
-		await prisma.stickers.deleteMany({ where: { packId: id } });
+		await prisma.packs.deleteMany({ where: { lineId: pack.id } });
+		await prisma.stickers.deleteMany({ where: { packId: pack.id } });
 		await jetpack.removeAsync(pack.uploadPath);
 	}
 
