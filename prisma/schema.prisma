@@ -8,18 +8,20 @@ datasource db {
 }
 
 model packs {
-  id         Int      @id @default(autoincrement())
-  lineId     String?
+  id         Int        @id @default(autoincrement())
+  lineId     Int?
   name       String?
   animated   Boolean?
   count      Int?
-  subscribed Int?     @default(0)
-  enabled    Boolean? @default(true)
+  subscribed Int?       @default(0)
+  enabled    Boolean?   @default(true)
+  stickers   stickers[]
 }
 
 model stickers {
   id     Int     @id @default(autoincrement())
-  packId String?
-  lineId String?
+  pack   packs   @relation(fields: [packId], references: [id])
+  packId Int
+  lineId Int
   file   String?
 }
