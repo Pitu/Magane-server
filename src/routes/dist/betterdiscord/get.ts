@@ -1,16 +1,7 @@
-const Route = require('../../structures/Route');
+import { Request, Response } from 'express';
 
-class PackGET extends Route {
-	constructor() {
-		super('/api/dist/betterdiscord', 'get');
-	}
-
-	authorize(req, res) {
-		return this.run(req, res);
-	}
-
-	run(req, res) {
-		const content = `//META{"name":"magane"}*//
+export const run = (req: Request, res: Response) => {
+	const content = `//META{"name":"magane"}*//
 const magane = function() {};
 magane.prototype.vars = {
 	className: 'magane-script',
@@ -64,10 +55,7 @@ magane.prototype.getDescription = function() { return 'Bringing LINE stickers to
 magane.prototype.getVersion = function() { return '3.1.0'; };
 magane.prototype.getAuthor = function() { return 'Kana'; };`;
 
-		res.setHeader('Content-type', 'application/octet-stream');
-		res.setHeader('Content-disposition', 'attachment; filename=magane.plugin.js');
-		res.send(content);
-	}
-}
-
-module.exports = PackGET;
+	res.setHeader('Content-type', 'application/octet-stream');
+	res.setHeader('Content-disposition', 'attachment; filename=magane.plugin.js');
+	res.send(content);
+};
