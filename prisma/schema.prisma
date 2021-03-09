@@ -10,7 +10,7 @@ datasource db {
 
 model packs {
 	id         Int        @id @default(autoincrement())
-	lineId     Int?		@unique
+	lineId     Int?		  @unique
 	name       String?
 	animated   Boolean?
 	count      Int?
