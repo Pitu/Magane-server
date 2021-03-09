@@ -11,9 +11,9 @@ const ex = util.promisify(exec);
 interface Pack {
 	id: number;
 	uploadPath: string;
-	name?: string;
-	stickers?: Sticker[];
-	animated?: boolean;
+	name: string;
+	stickers: Sticker[];
+	animated: boolean;
 }
 
 interface Sticker {
@@ -21,6 +21,9 @@ interface Sticker {
 	packId: number;
 	lineId: number;
 }
+type OptionalPackKeys = 'name'|'stickers'|'animated';
+type PartialPack = Omit<Pack, OptionalPackKeys> & Partial<Pick<Pack, OptionalPackKeys>>;
+
 export const run = async (req: Request, res: Response): Promise<any> => {
 	const { id } = req.params;
 	const { overwrite } = req.headers;
@@ -32,7 +35,7 @@ export const run = async (req: Request, res: Response): Promise<any> => {
 		});
 	}
 
-	const pack: Pack = {
+	const pack: PartialPack = {
 		id: parseInt(id, 10),
 		uploadPath: path.join(__dirname, '..', '..', '..', '..', '..', 'packs', id)
 	};
@@ -50,20 +53,20 @@ export const run = async (req: Request, res: Response): Promise<any> => {
 	void _saveToDatabase(packToSave);
 };
 
-const _getMetadata = async (pack: Pack) => {
+const _getMetadata = async (pack: PartialPack) => {
 	try {
 		const response = await axios.get(`http://dl.stickershop.line.naver.jp/products/0/0/1/${pack.id}/android/productInfo.meta`);
 		pack.name = response.data.title.en || response.data.title.ja;
 		pack.stickers = response.data.stickers;
 		pack.animated = response.data.hasAnimation;
-		return _getFiles(pack);
+		return _getFiles(pack as Pack);
 	} catch (error) {
 		console.error(error);
 	}
 };
 
 const _getFiles = async (pack: Pack) => {
-	for (const sticker of pack.stickers ?? []) {
+	for (const sticker of pack.stickers) {
 		let url = `http://dl.stickershop.line.naver.jp/stickershop/v1/sticker/${sticker.id}/android/sticker.png`;
 		if (pack.animated) url = `https://sdl-stickershop.line.naver.jp/products/0/0/1/${pack.id}/android/animation/${sticker.id}.png`;
 
@@ -103,19 +106,16 @@ const _saveToDatabase = async (pack: Pack) => {
 			name: pack.name,
 			lineId: pack.id,
 			animated: pack.animated,
-			count: pack.stickers?.length
+			count: pack.stickers.length,
+			stickers: {
+				create: pack.stickers.map(sticker => ({
+					packId: pack.id,
+					lineId: sticker.id,
+					file: pack.animated ? `${sticker.id.toString()}.gif` : `${sticker.id.toString()}.png`
+				}))
+			}
 		}
 	});
-
-	for (const sticker of pack.stickers ?? []) {
-		await prisma.stickers.create({
-			data: {
-				packId: pack.id,
-				lineId: sticker.id,
-				file: pack.animated ? `${sticker.id.toString()}.gif` : `${sticker.id.toString()}.png`
-			}
-		});
-	}
 
 	console.log(`< Successfully added pack ${pack.name} (ID: ${pack.id}) >`);
 
