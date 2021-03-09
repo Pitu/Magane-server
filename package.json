@@ -16,7 +16,7 @@
 	"scripts": {
 		"dev": "nodemon -r dotenv/config src/main.ts",
 		"start": "NODE_ENV=production node -r dotenv/config dist/main.js",
-		"build": "tsc"
+		"build": "tsc && cpy ./views ../dist --parents --cwd=src"
 	},
 	"dependencies": {
 		"@prisma/client": "^2.18.0",
@@ -39,6 +39,7 @@
 		"@types/sharp": "^0.27.1",
 		"@typescript-eslint/eslint-plugin": "^4.15.2",
 		"@typescript-eslint/parser": "^4.15.2",
+		"cpy-cli": "^3.1.1",
 		"eslint": "^7.21.0",
 		"eslint-config-marine": "^8.2.0",
 		"nodemon": "^2.0.7",
