@@ -49,8 +49,9 @@ export const run = async (req: Request, res: Response): Promise<any> => {
 	}
 
 	await jetpack.dir(pack.uploadPath);
-	const packToSave: any = _getMetadata(pack);
+	const packToSave: any = await _getMetadata(pack);
 	void _saveToDatabase(packToSave);
+	return res.sendStatus(204);
 };
 
 const _getMetadata = async (pack: PartialPack) => {
@@ -109,7 +110,6 @@ const _saveToDatabase = async (pack: Pack) => {
 			count: pack.stickers.length,
 			stickers: {
 				create: pack.stickers.map(sticker => ({
-					packId: pack.id,
 					lineId: sticker.id,
 					file: pack.animated ? `${sticker.id.toString()}.gif` : `${sticker.id.toString()}.png`
 				}))
