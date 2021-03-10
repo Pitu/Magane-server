@@ -26,7 +26,9 @@ type PartialPack = Omit<Pack, OptionalPackKeys> & Partial<Pick<Pack, OptionalPac
 
 export const run = async (req: Request, res: Response): Promise<any> => {
 	const { id } = req.params;
-	const { overwrite } = req.headers;
+	const { overwrite, secret } = req.headers;
+
+	if (!secret || secret !== process.env.secret) return res.sendStatus(403);
 
 	if (!id) {
 		return res.status(400).json({
