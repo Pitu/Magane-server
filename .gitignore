@@ -3,3 +3,4 @@ node_modules/
 /database/database.sqlite-journal
 /dist/
 .env
+/packs
