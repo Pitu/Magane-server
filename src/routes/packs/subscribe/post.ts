@@ -10,5 +10,5 @@ export const run = (req: Request, res: Response) => {
 		void prisma.packs.update({ where: { lineId: pack }, data: { subscribed: { increment: 1 } } });
 	});
 
-	return res.end();
+	return res.sendStatus(204);
 };
