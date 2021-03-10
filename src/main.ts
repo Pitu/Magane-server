@@ -1,7 +1,6 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import path from 'path';
 
@@ -13,8 +12,8 @@ const start = () => {
 	server.use(helmet());
 	server.use(cors());
 	server.use(morgan('dev'));
-	server.use(bodyParser.urlencoded({ extended: true }));
-	server.use(bodyParser.json());
+	server.use(express.urlencoded({ extended: true }));
+	server.use(express.json());
 
 	// Stuff solely related to serving the homepage
 	server.set('views', path.join(__dirname, '..', 'views'));
