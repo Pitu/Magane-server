@@ -543,6 +543,10 @@ p.shadow {
 	width: 240px;
 	box-shadow: 0 20px 60px rgba(10, 10, 10, 0.05), 0 5px 10px rgba(10, 10, 10, 0.1), 0 1px 1px rgba(10, 10, 10, 0.2);
 }
+img.logo.chibisafe {
+	height: 240px;
+	margin-bottom: 34px;
+}
 p.shadow.listen { background: #171927; }
 p.shadow.listen img {
 	height: 150px;
