@@ -56,9 +56,9 @@
 						<p class="text-large text-secondary">By installing Magane into your Discord client you gain access to a curated list of LINE sticker packs to use in the chat. It's as simple as that!</p>
 					</div>
 					<div class="column col-10 col-sm-12 col-mx-auto">
-						<video class="video-responsive" src="https://lolisafe.moe/owdxQF9m.mp4">
+						<video class="video-responsive" src="/videos/intro.mp4">
 						Sorry, your browser doesn't support embedded videos,
-						but don't worry, you can <a href="https://lolisafe.moe/owdxQF9m.mp4">download it</a>
+						but don't worry, you can <a href="/videos/intro.mp4">download it</a>
 						and watch it with your favorite video player!
 						</video>
 					</div>
@@ -146,44 +146,7 @@
 			</div>
 		</div>
 
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/plyr/2.0.16/plyr.js"></script>
-		<script>
-			window.onload = function() {
-				plyr.setup();
-
-				var activeTab;
-				var closeButtons = document.querySelectorAll('.btnModal');
-				for (var button of closeButtons) {
-					button.addEventListener('click', function() {
-						document.querySelector('#downloadModal').classList.toggle('active');
-						setActiveTab(0);
-					});
-				}
-
-				var tabs = document.querySelectorAll('.tab > li');
-				var tabLinks = document.querySelectorAll('.tab > li > a');
-				var tabContent = document.querySelectorAll('.tabContent > .content');
-
-				for (var i = 0; i < tabs.length; i++) {
-					tabs[i].addEventListener('click', setActiveTab.bind(this, i), false);
-				}
-
-				function setActiveTab(number) {
-					if (activeTab === number) return;
-					activeTab = number;
-					for (var i = 0; i < tabs.length; i++) {
-						if (i === number) {
-							tabs[i].classList.add('active');
-							tabLinks[i].classList.add('active');
-							tabContent[i].classList.add('active');
-						} else {
-							tabs[i].classList.remove('active');
-							tabLinks[i].classList.remove('active');
-							tabContent[i].classList.remove('active');
-						}
-					}
-				}
-			};
-		</script>
+		<script type="text/javascript" src="/js/plyr.js"></script>
+		<script type="text/javascript" src="/js/scripts.js"></script>
 	</body>
 </html>
