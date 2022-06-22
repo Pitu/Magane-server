@@ -28,7 +28,7 @@
 		"helmet": "^4.4.1",
 		"morgan": "^1.10.0",
 		"sharp": "^0.27.2",
-		"sqlite3": "^5.0.2"
+		"sqlite3": "^5.0.3"
 	},
 	"devDependencies": {
 		"@types/cors": "^2.8.10",
