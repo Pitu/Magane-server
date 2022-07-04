@@ -5,7 +5,7 @@ export const run = (req: Request, res: Response) => {
 const magane = function() {};
 magane.prototype.vars = {
 	className: 'magane-script',
-	src: 'https://magane.moe/api/dist/magane',
+	src: 'https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.plugin.js',
 	unloadIds: [
 		'maganeContainer',
 		'localStorageIframe'
