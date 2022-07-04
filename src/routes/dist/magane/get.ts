@@ -4,7 +4,7 @@ import axios from 'axios';
 export const run = async (req: Request, res: Response): Promise<any> => {
 	const response = await axios({
 		method: 'get',
-		url: 'https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.plugin.js',
+		url: 'https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.min.js',
 		responseType: 'text'
 	});
 
