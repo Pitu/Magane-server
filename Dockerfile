@@ -1,19 +1,14 @@
 FROM node:20-alpine
-USER root
 
 # Create app directory
 WORKDIR /app
+ENV NODE_ENV=production
 
 # Copy app source
-COPY src ./src
-COPY prisma ./prisma
-COPY package.json package.json
-COPY package-lock.json package-lock.json
-COPY tsconfig.json tsconfig.json
-COPY .env .env
+COPY . .
 
 # Install and prepare the app
-RUN npm install
+RUN npm install --production=false
 RUN npm run build
 
-CMD ["sh", "-c", "npm run start"];
+CMD ["node", "--dns-result-order=ipv4first", "-r", "dotenv/config", "dist/main.js"];
