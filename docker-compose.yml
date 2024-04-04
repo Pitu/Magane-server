@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  magane:
+    container_name: magane
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./database:/app/database:rw
+      - ./packs:/app/packs:rw
+    ports:
+      - 5001:5001
+    restart: unless-stopped
