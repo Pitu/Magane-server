@@ -4,7 +4,7 @@ import { $ } from 'bun';
 import jetpack from 'fs-jetpack';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
-// import { logger } from 'hono/logger';
+import { logger } from 'hono/logger';
 import sharp from 'sharp';
 
 const app = new Hono();
@@ -27,7 +27,7 @@ interface Sticker {
 type OptionalPackKeys = 'animated' | 'name' | 'stickers';
 type PartialPack = Omit<Pack, OptionalPackKeys> & Partial<Pick<Pack, OptionalPackKeys>>;
 
-// app.use(logger());
+app.use(logger());
 
 app.get('/api/dist/betterdiscord', async c => {
 	const response = await fetch('https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.plugin.js');
