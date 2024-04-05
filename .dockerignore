@@ -1,9 +1,8 @@
-**/node_modules
-**/dist
 **/.vscode
 **/database
-**/env.example
-**/.gitignore
+**/node_modules
+**/packs
+**/.editorconfig
+**/.eslintrc.json
+**/.prettierrc.json
 **/README.md
-**/.yarn/cache
-**/.yarn/install-state.gz

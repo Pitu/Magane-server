@@ -1,16 +1,57 @@
 {
-	"compilerOptions": {
-		"target": "esnext",
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"strict": true,
-		"jsx": "preserve",
-		"sourceMap": true,
-		"lib": ["esnext", "dom"],
-        "esModuleInterop": true,
-		"rootDir": "./src",
-		"outDir": "./dist",
-		"sourceRoot": "./"
-	},
-	"include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx"]
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "moduleDetection": "force",
+    "allowJs": true,
+
+    // Bundler mode
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+	"allowUnreachableCode": false,
+	"allowUnusedLabels": false,
+	"exactOptionalPropertyTypes": true,
+	"noFallthroughCasesInSwitch": true,
+	"noImplicitOverride": true,
+	"noImplicitReturns": true,
+	"noPropertyAccessFromIndexSignature": false,
+	"noUncheckedIndexedAccess": true,
+	"noUnusedLocals": true,
+	"noUnusedParameters": true,
+	"strict": true,
+
+	// Modules
+	"allowArbitraryExtensions": false,
+	"allowImportingTsExtensions": true,
+	"module": "ESNext",
+	"moduleResolution": "Bundler",
+	"resolveJsonModule": true,
+	"resolvePackageJsonExports": false,
+	"resolvePackageJsonImports": false,
+
+	// Emit
+	"declaration": true,
+	"declarationMap": true,
+	"importHelpers": false,
+	"newLine": "lf",
+	"noEmitHelpers": true,
+	"outDir": "dist",
+	"removeComments": false,
+	"sourceMap": true,
+
+	// Interop Constraints
+	"allowSyntheticDefaultImports": true,
+	"esModuleInterop": false,
+	"forceConsistentCasingInFileNames": true,
+	"isolatedModules": true,
+
+	// Language and Environment
+	"experimentalDecorators": true,
+	"lib": ["ESNext", "DOM"],
+	"target": "ES2022",
+	"useDefineForClassFields": true,
+
+	"skipLibCheck": true
+  }
 }

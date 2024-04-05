@@ -1,6 +1,5 @@
-node_modules/
-/database/database.sqlite
-/database/database.sqlite-journal
-/dist/
+node_modules
 .env
-/packs
+dist
+database
+packs

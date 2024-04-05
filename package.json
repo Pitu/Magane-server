@@ -2,7 +2,7 @@
 	"name": "magane-server",
 	"version": "2.0.0",
 	"description": "Backend service for the Magane Discord plugin",
-	"main": "dist/main.js",
+	"main": "dist/index.ts",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Pitu/Magane-server.git"
@@ -14,40 +14,24 @@
 	},
 	"license": "MIT",
 	"scripts": {
-		"dev": "nodemon -r dotenv/config src/main.ts",
-		"start": "NODE_ENV=production node -r dotenv/config dist/main.js",
-		"build": "tsc && cpy views '../../dist' --cwd=src"
+		"dev": "bun run --hot src/index.ts"
 	},
+	"type": "module",
 	"dependencies": {
-		"@prisma/client": "5.12.1",
+		"@prisma/client": "^5.12.1",
 		"axios": "^1.6.8",
-		"cors": "^2.8.5",
-		"dotenv": "^16.4.5",
-		"express": "^4.19.2",
 		"fs-jetpack": "^5.1.0",
-		"helmet": "^7.1.0",
-		"morgan": "^1.10.0",
-		"sharp": "^0.33.3",
-		"sqlite3": "^5.1.7"
+		"hono": "^4.2.1",
+		"sharp": "^0.33.3"
 	},
 	"devDependencies": {
-		"@types/cors": "^2.8.17",
-		"@types/express": "^4.17.21",
-		"@types/morgan": "^1.9.9",
-		"@types/node": "^20.12.4",
-		"@types/sharp": "^0.32.0",
-		"@typescript-eslint/eslint-plugin": "^7.5.0",
-		"@typescript-eslint/parser": "^7.5.0",
-		"cpy-cli": "^5.0.0",
+		"@types/bun": "latest",
 		"eslint": "^8.57.0",
-		"eslint-config-marine": "^9.4.1",
-		"nodemon": "^3.1.0",
-		"prisma": "5.12.1",
-		"ts-node": "^10.9.2",
-		"typescript": "^5.4.3"
+		"eslint-config-neon": "^0.1.60",
+		"prettier": "^3.2.5",
+		"prisma": "^5.12.1"
 	},
-	"eslintConfig": {
-		"extends": "marine/node"
-	},
-	"packageManager": "yarn@4.1.1"
+	"trustedDependencies": [
+		"sharp"
+	]
 }
