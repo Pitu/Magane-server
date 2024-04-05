@@ -4,6 +4,7 @@ import { $ } from 'bun';
 import jetpack from 'fs-jetpack';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
+import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import sharp from 'sharp';
 
@@ -28,6 +29,7 @@ type OptionalPackKeys = 'animated' | 'name' | 'stickers';
 type PartialPack = Omit<Pack, OptionalPackKeys> & Partial<Pick<Pack, OptionalPackKeys>>;
 
 app.use(logger());
+app.use(cors());
 
 app.get('/api/dist/betterdiscord', async c => {
 	const response = await fetch('https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.plugin.js');
@@ -166,7 +168,7 @@ app.post('/api/pack/line/:id', async c => {
 		await jetpack.removeAsync(pack.uploadPath);
 	}
 
-	await jetpack.dir(pack.uploadPath);
+	jetpack.dir(pack.uploadPath);
 	const packToSave: any = await _getMetadata(pack);
 	void _saveToDatabase(packToSave);
 	return c.json({});
