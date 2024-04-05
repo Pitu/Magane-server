@@ -8,6 +8,7 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       - ./database:/app/database:rw
+      - ./packs:/app/packs:rw
     ports:
       - 5000:5000
     restart: unless-stopped
