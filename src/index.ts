@@ -35,30 +35,24 @@ app.get('/api/dist/betterdiscord', async c => {
 	const response = await fetch('https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.plugin.js');
 	if (!response.ok) return c.json({ message: 'Failed to fetch plugin' }, 500);
 	const data = await response.text();
-	return c.json(
-		{ data },
-		{
-			headers: {
-				'content-type': 'application/octet-stream',
-				'Content-disposition': 'attachment; filename=magane.plugin.js'
-			}
+	return c.text(data, {
+		headers: {
+			'content-type': 'application/octet-stream',
+			'Content-disposition': 'attachment; filename=magane.plugin.js'
 		}
-	);
+	});
 });
 
 app.get('/api/dist/vencord', async c => {
 	const response = await fetch('https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.vencord.js');
 	if (!response.ok) return c.json({ message: 'Failed to fetch plugin' }, 500);
 	const data = await response.text();
-	return c.json(
-		{ data },
-		{
-			headers: {
-				'content-type': 'application/octet-stream',
-				'Content-disposition': 'attachment; filename=magane.vencord.js'
-			}
+	return c.text(data, {
+		headers: {
+			'content-type': 'application/octet-stream',
+			'Content-disposition': 'attachment; filename=magane.vencord.js'
 		}
-	);
+	});
 });
 
 app.get('/api/proxy/emoji/:id', async c => {
