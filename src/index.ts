@@ -43,6 +43,7 @@ app.get('/api/dist/betterdiscord', async c => {
 	});
 });
 
+/*
 app.get('/api/dist/vencord', async c => {
 	const response = await fetch('https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.vencord.js');
 	if (!response.ok) return c.json({ message: 'Failed to fetch plugin' }, 500);
@@ -54,6 +55,7 @@ app.get('/api/dist/vencord', async c => {
 		}
 	});
 });
+*/
 
 app.get('/api/proxy/emoji/:id', async c => {
 	const { id } = c.req.param();
@@ -66,7 +68,8 @@ app.get('/api/proxy/emoji/:id', async c => {
 
 	const title = /<title[^>]*>([^<]+)<\/title>/.exec(data)?.[1]?.split(' – LINE Emoji | LINE STORE')[0];
 	const len = (data.match(/FnStickerPreviewItem/g) ?? []).length;
-	return c.json({ title, id, len });
+	const hasAnimation = /MdIcoPlay_b/g.test(data);
+	return c.json({ title, id, len, hasAnimation });
 });
 
 app.get('/api/proxy/sticker/:id', async c => {
