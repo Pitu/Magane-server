@@ -73,11 +73,24 @@ app.get('/api/proxy/sticker/:id', async c => {
 	const { id } = c.req.param();
 	if (!id) return c.json({ message: 'Invalid pack ID supplied' }, 400);
 
-	const response = await fetch(`http://dl.stickershop.line.naver.jp/products/0/0/1/${id}/android/productInfo.meta`);
+	const urls = [
+		`https://stickershop.line-scdn.net/stickershop/v1/product/${id}/iphone/productInfo.meta`,
+		`http://dl.stickershop.line.naver.jp/products/0/0/1/${id}/android/productInfo.meta`
+	];
 
-	if (!response.ok) return c.json('Failed to fetch sticker pack', 400);
+	let data;
+	for (const url of urls) {
+		try {
+			const response = await fetch(url);
+			if (!response.ok) continue;
+			data = await response.json();
+			if (data) break;
+		} catch {
+			continue;
+		}
+	}
 
-	const data = await response.json();
+	if (!data) return c.json('Failed to fetch sticker pack', 400);
 
 	return c.json({
 		title: data.title.en,
