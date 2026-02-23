@@ -177,22 +177,35 @@ app.post('/api/pack/line/:id', async c => {
 
 	jetpack.dir(pack.uploadPath);
 	const packToSave: any = await _getMetadata(pack);
+	if (!packToSave) return c.json({});
 	void _saveToDatabase(packToSave);
 	return c.json({});
 });
 
 const _getMetadata = async (pack: PartialPack) => {
 	try {
-		const response = await fetch(
+		const urls = [
+			`https://stickershop.line-scdn.net/stickershop/v1/product/${pack.id}/iphone/productInfo.meta`,
 			`http://dl.stickershop.line.naver.jp/products/0/0/1/${pack.id}/android/productInfo.meta`
-		);
+		];
 
-		if (!response.ok) {
-			console.error('Failed to fetch metadata');
-			return;
+		let data;
+		for (const url of urls) {
+			try {
+				const response = await fetch(url);
+				if (!response.ok) continue;
+				data = await response.json();
+				if (data) break;
+			} catch {
+				continue;
+			}
 		}
 
-		const data = await response.json();
+		if (!data) {
+			console.error('Failed to fetch metadata');
+			return null;
+		}
+
 		return await _getFiles({
 			...pack,
 			stickers: data.stickers,
