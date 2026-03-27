@@ -43,6 +43,7 @@ app.get('/api/dist/betterdiscord', async c => {
 	});
 });
 
+/*
 app.get('/api/dist/vencord', async c => {
 	const response = await fetch('https://raw.githubusercontent.com/Pitu/Magane/master/dist/magane.vencord.js');
 	if (!response.ok) return c.json({ message: 'Failed to fetch plugin' }, 500);
@@ -54,6 +55,7 @@ app.get('/api/dist/vencord', async c => {
 		}
 	});
 });
+*/
 
 app.get('/api/proxy/emoji/:id', async c => {
 	const { id } = c.req.param();
@@ -65,8 +67,37 @@ app.get('/api/proxy/emoji/:id', async c => {
 	const data = await response.text();
 
 	const title = /<title[^>]*>([^<]+)<\/title>/.exec(data)?.[1]?.split(' – LINE Emoji | LINE STORE')[0];
-	const len = (data.match(/FnStickerPreviewItem/g) ?? []).length;
-	return c.json({ title, id, len });
+
+	let len = (data.match(/FnStickerPreviewItem/g) ?? []).length;
+	let hasAnimation = /MdIcoPlay_b/g.test(data);
+
+	// If unable to determine emojis count by parsing its store page, assume region-locked or other reasons
+	// This is not default because emojis meta.json do not have their pack titles
+	if (len === 0) {
+		const urls = [
+			`https://stickershop.line-scdn.net/sticonshop/v1/${id}/sticon/iphone/meta.json`,
+			`https://stickershop.line-scdn.net/sticonshop/v1/${id}/sticon/android/meta.json`
+		];
+
+		let dataMeta;
+		for (const url of urls) {
+			try {
+				const responseMeta = await fetch(url);
+				if (!responseMeta.ok) continue;
+				dataMeta = await responseMeta.json();
+				if (dataMeta) break;
+			} catch {
+				continue;
+			}
+		}
+
+		if (!dataMeta) return c.json('Failed to fetch emoji pack', 400);
+
+		len = dataMeta.orders.length
+		hasAnimation = dataMeta.sticonResourceType === 'ANIMATION'
+	}
+
+	return c.json({ title, id, len, hasAnimation });
 });
 
 app.get('/api/proxy/sticker/:id', async c => {
