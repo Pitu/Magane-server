@@ -14,22 +14,23 @@
 	},
 	"license": "MIT",
 	"scripts": {
-		"dev": "bun run --hot src/index.ts"
+		"dev": "bun run --hot src/index.ts",
+		"test:image": "bash scripts/test-image.sh"
 	},
 	"type": "module",
 	"dependencies": {
-		"@prisma/client": "^5.12.1",
-		"axios": "^1.6.8",
+		"@prisma/client": "5.22.0",
+		"axios": "1.20.0",
 		"fs-jetpack": "^5.1.0",
-		"hono": "^4.2.1",
-		"sharp": "^0.33.3"
+		"hono": "4.13.13",
+		"sharp": "0.35.5"
 	},
 	"devDependencies": {
-		"@types/bun": "latest",
-		"eslint": "^8.57.0",
-		"eslint-config-neon": "^0.1.60",
-		"prettier": "^3.2.5",
-		"prisma": "^5.12.1"
+		"@types/bun": "1.4.3",
+		"eslint": "^8.57.1",
+		"eslint-config-neon": "^0.1.62",
+		"prettier": "^3.9.10",
+		"prisma": "5.22.0"
 	},
 	"trustedDependencies": [
 		"sharp"

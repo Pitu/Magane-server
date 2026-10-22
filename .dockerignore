@@ -1,4 +1,6 @@
 **/.vscode
+**/.git
+**/.env
 **/database
 **/node_modules
 **/packs
