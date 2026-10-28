@@ -6,6 +6,7 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile
+    env_file: .env
     volumes:
       - ./database:/app/database:rw
       - ./packs:/app/packs:rw
